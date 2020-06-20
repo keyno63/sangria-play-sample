@@ -1,8 +1,8 @@
 package controllers
 
 import javax.inject._
-
 import akka.actor.ActorSystem
+import play.api.libs.circe.Circe
 import play.api.mvc._
 
 import scala.concurrent.duration._
@@ -24,8 +24,8 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
  * a blocking API.
  */
 @Singleton
-class AsyncController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext)
-  extends AbstractController(cc) {
+class GraphQlController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext)
+  extends AbstractController(cc) with Circe {
 
   /**
    * Creates an Action that returns a plain text message after a delay
@@ -35,7 +35,7 @@ class AsyncController @Inject()(cc: ControllerComponents, actorSystem: ActorSyst
    * will be called when the application receives a `GET` request with
    * a path of `/message`.
    */
-  def message = Action.async {
+  def graphql = Action(circe.json).async {
     getFutureMessage(1.second).map { msg => Ok(msg) }
   }
 
