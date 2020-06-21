@@ -37,19 +37,14 @@ class GraphQlController @Inject()(qs: QueryServiceImpl, cc: ControllerComponents
    * a path of `/message`.
    */
   def graphql: Action[Json] = Action(circe.json).async {
-    request => {
-      val ret = getFutureMessage(request)
-      Future(ret)
-    }
+    request => getFutureMessage(request)
   }
 
-  private def getFutureMessage(request: Request[Json]): Result = {
+  private def getFutureMessage(request: Request[Json]): Future[Result] = {
     parser.parse(request.body.toString()) match {
-      case Right(value) => {
-        qs.graphql(value)
-        Ok(value)
-      }
-      case _ => BadRequest("parse request body.")
+      case Right(value) =>
+        qs.graphql(value).map(_.fold(Ok(_), BadRequest(_)))
+      case _ => Future(BadRequest("parse request body."))
     }
   }
 
