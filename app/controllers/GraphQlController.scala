@@ -5,10 +5,9 @@ import akka.actor.ActorSystem
 import io.circe.{Json, parser}
 import play.api.libs.circe.Circe
 import play.api.mvc._
-import service.QueryService
+import service.QueryServiceImpl
 
-import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * This controller creates an `Action` that demonstrates how to write
@@ -26,7 +25,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
  * a blocking API.
  */
 @Singleton
-class GraphQlController @Inject()(qs: QueryService, cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext)
+class GraphQlController @Inject()(qs: QueryServiceImpl, cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext)
   extends AbstractController(cc) with Circe {
 
   /**
@@ -37,14 +36,14 @@ class GraphQlController @Inject()(qs: QueryService, cc: ControllerComponents, ac
    * will be called when the application receives a `GET` request with
    * a path of `/message`.
    */
-  def graphql = Action(circe.json).async {
+  def graphql: Action[Json] = Action(circe.json).async {
     request => {
       val ret = getFutureMessage(request)
       Future(ret)
     }
   }
 
-  private def getFutureMessage(request: Request[Json]) = {
+  private def getFutureMessage(request: Request[Json]): Result = {
     parser.parse(request.body.toString()) match {
       case Right(value) => {
         qs.graphql(value)
