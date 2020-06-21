@@ -2,8 +2,10 @@ package controllers
 
 import javax.inject._
 import akka.actor.ActorSystem
+import io.circe.{Json, parser}
 import play.api.libs.circe.Circe
 import play.api.mvc._
+import service.QueryService
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future, Promise}
@@ -24,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
  * a blocking API.
  */
 @Singleton
-class GraphQlController @Inject()(cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext)
+class GraphQlController @Inject()(qs: QueryService, cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext)
   extends AbstractController(cc) with Circe {
 
   /**
@@ -36,15 +38,20 @@ class GraphQlController @Inject()(cc: ControllerComponents, actorSystem: ActorSy
    * a path of `/message`.
    */
   def graphql = Action(circe.json).async {
-    getFutureMessage(1.second).map { msg => Ok(msg) }
+    request => {
+      val ret = getFutureMessage(request)
+      Future(ret)
+    }
   }
 
-  private def getFutureMessage(delayTime: FiniteDuration): Future[String] = {
-    val promise: Promise[String] = Promise[String]()
-    actorSystem.scheduler.scheduleOnce(delayTime) {
-      promise.success("Hi!")
-    }(actorSystem.dispatcher) // run scheduled tasks using the actor system's dispatcher
-    promise.future
+  private def getFutureMessage(request: Request[Json]) = {
+    parser.parse(request.body.toString()) match {
+      case Right(value) => {
+        qs.graphql(value)
+        Ok(value)
+      }
+      case _ => BadRequest("parse request body.")
+    }
   }
 
 }
