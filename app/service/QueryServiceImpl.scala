@@ -3,6 +3,7 @@ package service
 import domain.graphql.SchemaDefinition
 import io.circe.{Json, parser}
 import io.circe.optics.JsonPath.root
+import javax.inject.Inject
 import repository.mock.RepositoryContainerImpl
 import sangria.ast.Document
 import sangria.execution.deferred.DeferredResolver
@@ -14,7 +15,7 @@ import service.interface.QueryService
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-class QueryServiceImpl()(implicit ec: ExecutionContext) extends QueryService {
+class QueryServiceImpl @Inject() ()(implicit ec: ExecutionContext) extends QueryService {
 
   override def graphql(json: Json): Future[Either[String, String]] = {
     val query = root.query.string.getOption(json)
@@ -36,7 +37,7 @@ class QueryServiceImpl()(implicit ec: ExecutionContext) extends QueryService {
 
   private def executeGraphQL(query: Document): Future[Either[String, String]] = {
     Executor.execute(
-      SchemaDefinition.CustomSchema, query, RepositoryContainerImpl,
+      SchemaDefinition.CustomSchema, query, new RepositoryContainerImpl,
       deferredResolver = DeferredResolver.fetchers(SchemaDefinition.movies)
     ).map(x => Right(s"${x}"))
     .recover {

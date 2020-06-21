@@ -5,4 +5,4 @@
 
 # An example controller showing how to write asynchronous code
 GET     /                           controllers.GraphQlController.graphql
-GET     /graphql                    controllers.GraphQlController.graphql
+POST    /graphql                    controllers.GraphQlController.graphql
