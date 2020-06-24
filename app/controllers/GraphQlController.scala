@@ -3,6 +3,7 @@ package controllers
 import javax.inject._
 import akka.actor.ActorSystem
 import io.circe.{Json, parser}
+import play.api.Play
 import play.api.libs.circe.Circe
 import play.api.mvc._
 import service.interface.QueryService
@@ -38,6 +39,10 @@ class GraphQlController @Inject()(qs: QueryService, cc: ControllerComponents, ac
    */
   def graphql: Action[Json] = Action(circe.json).async {
     request => getFutureMessage(request)
+  }
+
+  def playground = Action {
+    Ok(views.html.playground())
   }
 
   private def getFutureMessage(request: Request[Json]): Future[Result] = {
