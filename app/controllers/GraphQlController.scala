@@ -41,7 +41,7 @@ class GraphQlController @Inject()(qs: QueryService, cc: ControllerComponents, ac
     request => getFutureMessage(request)
   }
 
-  def playground = Action {
+  def playground: Action[AnyContent] = Action {
     Ok(views.html.playground())
   }
 
