@@ -8,7 +8,7 @@ resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
       
 resolvers += "Akka Snapshot Repository" at "https://repo.akka.io/snapshots/"
       
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.12"
 
 lazy val sangriaVersion = "2.0.0"
 lazy val sangriaSlowlogVersion = "0.1.8"
@@ -37,7 +37,5 @@ libraryDependencies ++=
     "com.dripower" %% "play-circe" % circePlayVersion
   )
 
-
-unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
-
+unmanagedResourceDirectories in Test +=  baseDirectory.value / "target/web/public/test"
       
