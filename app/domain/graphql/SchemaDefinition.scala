@@ -1,25 +1,39 @@
 package domain.graphql
 
-import domain.interface.{Movie, Theater}
+import domain.interface.{ Movie, Theater }
 import repository.interface.RepositoryContainer
-import sangria.execution.deferred.{Fetcher, HasId}
-import sangria.schema.{Argument, Field, IntType, ListType, ObjectType, OptionInputType, OptionType, Schema, StringType, fields, interfaces}
+import sangria.execution.deferred.{ Fetcher, HasId }
+import sangria.schema.{
+  fields,
+  interfaces,
+  Argument,
+  Field,
+  IntType,
+  ListType,
+  ObjectType,
+  OptionInputType,
+  OptionType,
+  Schema,
+  StringType
+}
 
 import scala.concurrent.Future
 
 object SchemaDefinition {
   val ID: Argument[Int] = Argument("id", IntType, description = "id of the object")
 
-  val LimitArg: Argument[Int] = Argument("limit", OptionInputType(IntType), defaultValue = 20)
+  val LimitArg: Argument[Int]  = Argument("limit", OptionInputType(IntType), defaultValue = 20)
   val OffsetArg: Argument[Int] = Argument("offset", OptionInputType(IntType), defaultValue = 0)
 
-  val movies: Fetcher[RepositoryContainer, Movie, Movie, Int] = Fetcher.caching(
-    (ctx: RepositoryContainer, ids: Seq[Int]) =>
-      Future.successful(ids.flatMap(id => ctx.movieRepository.getMovie(id))))(HasId(_.id))
+  val movies: Fetcher[RepositoryContainer, Movie, Movie, Int] =
+    Fetcher.caching((ctx: RepositoryContainer, ids: Seq[Int]) =>
+      Future.successful(ids.flatMap(id => ctx.movieRepository.getMovie(id)))
+    )(HasId(_.id))
 
-  val theaters: Fetcher[RepositoryContainer, Theater, Theater, Int] = Fetcher.caching(
-    (ctx: RepositoryContainer, ids: Seq[Int]) =>
-      Future.successful(ids.flatMap(id => ctx.theaterRepository.getTheater(id))))(HasId(_.id))
+  val theaters: Fetcher[RepositoryContainer, Theater, Theater, Int] =
+    Fetcher.caching((ctx: RepositoryContainer, ids: Seq[Int]) =>
+      Future.successful(ids.flatMap(id => ctx.theaterRepository.getTheater(id)))
+    )(HasId(_.id))
 
   /* 実際のオブジェクト */
   val Movie: ObjectType[RepositoryContainer, Movie] =
@@ -82,7 +96,7 @@ object SchemaDefinition {
       )
     )
 
-  val Query: ObjectType[RepositoryContainer, Unit] = ObjectType(
+  val Query: ObjectType[RepositoryContainer, Unit]    = ObjectType(
     "Query",
     fields[RepositoryContainer, Unit](
       Field(
@@ -108,7 +122,7 @@ object SchemaDefinition {
         ListType(Theater),
         arguments = LimitArg :: OffsetArg :: Nil,
         resolve = ctx => ctx.ctx.theaterRepository.getTheaters(ctx arg LimitArg, ctx arg OffsetArg)
-      ),
+      )
     )
   )
   // schema 定義の変数

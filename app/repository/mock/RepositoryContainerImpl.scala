@@ -1,6 +1,6 @@
 package repository.mock
 
-import repository.interface.{MovieRepository, RepositoryContainer, TheaterRepository}
+import repository.interface.{ MovieRepository, RepositoryContainer, TheaterRepository }
 
 class RepositoryContainerImpl extends RepositoryContainer {
   override def movieRepository: MovieRepository = new MovieRepositoryImpl

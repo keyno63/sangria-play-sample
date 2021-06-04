@@ -2,13 +2,13 @@ package controllers
 
 import javax.inject._
 import akka.actor.ActorSystem
-import io.circe.{Json, parser}
+import io.circe.{ parser, Json }
 import play.api.Play
 import play.api.libs.circe.Circe
 import play.api.mvc._
 import service.interface.QueryService
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * This controller creates an `Action` that demonstrates how to write
@@ -26,8 +26,10 @@ import scala.concurrent.{ExecutionContext, Future}
  * a blocking API.
  */
 @Singleton
-class GraphQlController @Inject()(qs: QueryService, cc: ControllerComponents, actorSystem: ActorSystem)(implicit exec: ExecutionContext)
-  extends AbstractController(cc) with Circe {
+class GraphQlController @Inject() (qs: QueryService, cc: ControllerComponents, actorSystem: ActorSystem)(implicit
+  exec: ExecutionContext
+) extends AbstractController(cc)
+    with Circe {
 
   /**
    * Creates an Action that returns a plain text message after a delay
@@ -37,20 +39,19 @@ class GraphQlController @Inject()(qs: QueryService, cc: ControllerComponents, ac
    * will be called when the application receives a `GET` request with
    * a path of `/message`.
    */
-  def graphql: Action[Json] = Action(circe.json).async {
-    request => getFutureMessage(request)
+  def graphql: Action[Json] = Action(circe.json).async { request =>
+    getFutureMessage(request)
   }
 
   def playground: Action[AnyContent] = Action {
     Ok(views.html.playground())
   }
 
-  private def getFutureMessage(request: Request[Json]): Future[Result] = {
+  private def getFutureMessage(request: Request[Json]): Future[Result] =
     parser.parse(request.body.toString()) match {
       case Right(value) =>
         qs.graphql(value).map(_.fold(BadRequest(_), Ok(_)))
-      case _ => Future(BadRequest("parse request body."))
+      case _            => Future(BadRequest("parse request body."))
     }
-  }
 
 }

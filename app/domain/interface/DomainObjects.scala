@@ -2,13 +2,13 @@ package domain.interface
 
 import java.util.Date
 
-case class Movie (
+case class Movie(
   id: Int,
   title: String,
   start: Date
 )
 
-case class Theater (
+case class Theater(
   id: Int,
   name: String,
   address: String,
