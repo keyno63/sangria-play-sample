@@ -8,7 +8,7 @@ import play.api.libs.circe.Circe
 import play.api.mvc._
 import service.interface.QueryService
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * This controller creates an `Action` that demonstrates how to write

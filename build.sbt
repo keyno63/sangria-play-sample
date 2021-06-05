@@ -27,14 +27,14 @@ resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 resolvers += "Akka Snapshot Repository" at "https://repo.akka.io/snapshots/"
 
-scalaVersion := "2.12.12"
+scalaVersion := "2.13.5"
 
-lazy val sangriaVersion        = "2.0.0"
-lazy val sangriaSlowlogVersion = "0.1.8"
-lazy val sangriaCirceVersion   = "1.2.1"
+lazy val sangriaVersion        = "2.1.3"
+lazy val sangriaSlowlogVersion = "2.0.2"
+lazy val sangriaCirceVersion   = "1.3.2"
 
 lazy val circeVersion     = "0.12.1"
-lazy val circeOptVersion  = "0.9.3"
+lazy val circeOptVersion  = "0.14.1"
 lazy val circePlayVersion = "2812.0"
 
 unmanagedResourceDirectories in Test += baseDirectory.value / "target/web/public/test"
